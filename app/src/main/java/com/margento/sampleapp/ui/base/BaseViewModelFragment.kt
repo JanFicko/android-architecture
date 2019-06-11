@@ -25,17 +25,29 @@ abstract class BaseViewModelFragment<ST, VM : BaseViewModel<ST>> : Fragment() {
 
         baseActivity = context as BaseViewModelActivity<*, *>?
 
-        /*viewmodel.screenState.observe(::getLifecycle, ::updateUi)
-        viewmodel.loadingState.observe(::getLifecycle, ::updateUi)*/
+        /**
+         * LiveData delivers whatever the last value was immediately (if a value had been posted
+         * previously), plus future changes. Dirty fix in onPause function.
+         */
+        viewmodel.screenState.observe(::getLifecycle, ::updateUi)
+        viewmodel.loadingState.observe(::getLifecycle, ::updateUi)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layoutResId, container, false)
     }
 
-    private fun updateUi(screenState : ScreenState<ST>) = when (screenState) {
-        is ScreenState.Render -> processRenderState(screenState.renderState)
-        is ScreenState.Loading -> baseActivity?.showLoadingIndicator(screenState.active)
+    /*override fun onPause() {
+       super.onPause()
+       viewmodel._screenState.postValue(null)
+       viewmodel._loadingState.postValue(null)
+   }*/
+
+    private fun updateUi(screenState : ScreenState<ST>) {
+        when (screenState) {
+            is ScreenState.Render -> processRenderState(screenState.renderState)
+            is ScreenState.Loading -> baseActivity?.showLoadingIndicator(screenState.active)
+        }
     }
 
     abstract fun processRenderState(renderState: ST)
