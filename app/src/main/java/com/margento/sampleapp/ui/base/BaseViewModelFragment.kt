@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import kotlin.contracts.ExperimentalContracts
 
 abstract class BaseViewModelFragment<ST, VM : BaseViewModel<ST>> : Fragment() {
 
